@@ -1,35 +1,32 @@
 @echo off
-:: 合同跟踪平台 - 开机自启脚本
-chcp 65001 >nul
 cd /d "D:\ShareHub\contract-tracker\server"
 
-:: 确保日志目录存在
+:: 日志目录
 if not exist "logs" mkdir logs
 
-:: 记录启动时间
-echo [%date% %time%] 开始启动... >> logs\server.log
+echo [%date% %time%] === 启动合同跟踪平台 === >> logs\server.log
 
-:: 尝试找到 node.exe
-set NODE_PATH=
-for %%d in (
-    "C:\Program Files\nodejs"
-    "C:\Program Files (x86)\nodejs"
-    "%APPDATA%\nvm\*\node.exe"
-) do (
-    if exist "%%~d\node.exe" set NODE_PATH=%%~d\node.exe
-)
-if not defined NODE_PATH (
-    where node >nul 2>&1 && set NODE_PATH=node || set NODE_PATH=node
-)
+:: 尝试多种方式定位 node.exe
+set NODE_EXE=
+:: 1. 检查系统 PATH
+for /f "delims=" %%i in ('where node 2^>nul') do set NODE_EXE=%%i
+:: 2. 常见安装路径
+if not defined NODE_EXE if exist "C:\Program Files\nodejs\node.exe" set NODE_EXE=C:\Program Files\nodejs\node.exe
+if not defined NODE_EXE if exist "%ProgramFiles%\nodejs\node.exe" set NODE_EXE=%ProgramFiles%\nodejs\node.exe
+:: 3. nvm-windows
+if not defined NODE_EXE for /f "delims=" %%i in ('dir /b /s "%APPDATA%\nvm\*\node.exe" 2^>nul') do set NODE_EXE=%%i
+:: 4. fnm
+if not defined NODE_EXE if exist "%LOCALAPPDATA%\fnm\aliases\default\node.exe" set NODE_EXE=%LOCALAPPDATA%\fnm\aliases\default\node.exe
 
-:: 杀掉旧的 node 进程（避免端口冲突）
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":3001.*LISTENING" 2^>nul') do (
-    taskkill /F /PID %%a >nul 2>&1
-    echo [%date% %time%] 已关闭旧进程 PID:%%a >> logs\server.log
+if not defined NODE_EXE (
+    echo [%date% %time%] 错误: 找不到 Node.js >> logs\server.log
+    exit /b 1
 )
 
-:: 等待端口释放
-timeout /t 3 /nobreak >nul
+echo [%date% %time%] Node.js: %NODE_EXE% >> logs\server.log
 
-:: 启动服务
-%NODE_PATH% dist\index.js >> logs\server.log 2>&1
+:: 等待网络就绪
+timeout /t 5 /nobreak >nul
+
+:: 启动
+"%NODE_EXE%" dist\index.js >> logs\server.log 2>&1

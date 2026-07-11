@@ -1,0 +1,141 @@
+classDiagram
+    class User {
+        +number id
+        +string username
+        +string password
+        +string display_name
+        +string role
+        +string created_at
+        +login(username, password) string
+        +toJSON() object
+    }
+
+    class Contract {
+        +number id
+        +string contract_no
+        +string contract_name
+        +string party
+        +number amount
+        +string signed_date
+        +string status
+        +number salesperson_id
+        +string created_at
+        +string updated_at
+        +getInvoices() Invoice[]
+        +getPaymentSummary() {invoiced_amount, paid_amount, progress}
+    }
+
+    class Invoice {
+        +number id
+        +number contract_id
+        +string invoice_no
+        +string invoice_date
+        +number amount
+        +string invoice_type
+        +string created_at
+        +string updated_at
+        +getPayments() Payment[]
+        +getPaidAmount() number
+        +isOverdue(days: number) boolean
+    }
+
+    class Payment {
+        +number id
+        +number invoice_id
+        +string payment_date
+        +number amount
+        +string status
+        +string created_at
+        +string updated_at
+    }
+
+    class AuthMiddleware {
+        +verifyToken(req, res, next) void
+        +requireAdmin(req, res, next) void
+    }
+
+    class ErrorHandler {
+        +handle(err, req, res, next) void
+    }
+
+    class Database {
+        +init() void
+        +getInstance() Database
+        +query(sql, params) any[]
+    }
+
+    class AuthRoutes {
+        +login(req, res) void
+        +getMe(req, res) void
+    }
+
+    class ContractRoutes {
+        +list(req, res) void
+        +create(req, res) void
+        +getById(req, res) void
+        +update(req, res) void
+        +delete(req, res) void
+        +exportExcel(req, res) void
+    }
+
+    class InvoiceRoutes {
+        +listByContract(req, res) void
+        +create(req, res) void
+        +update(req, res) void
+        +delete(req, res) void
+    }
+
+    class PaymentRoutes {
+        +listByInvoice(req, res) void
+        +create(req, res) void
+        +update(req, res) void
+        +delete(req, res) void
+    }
+
+    class ApiClient {
+        +axiosInstance AxiosInstance
+        +get(url, params) Promise
+        +post(url, data) Promise
+        +put(url, data) Promise
+        +delete(url) Promise
+    }
+
+    class AuthContext {
+        +user User
+        +token string
+        +login(username, password) Promise
+        +logout() void
+    }
+
+    class AuthApi {
+        +login(data) Promise~ApiResponse~
+        +getMe() Promise~ApiResponse~
+    }
+
+    class ContractApi {
+        +list(query) Promise~ApiResponse~
+        +create(data) Promise~ApiResponse~
+        +getById(id) Promise~ApiResponse~
+        +update(id, data) Promise~ApiResponse~
+        +delete(id) Promise~ApiResponse~
+        +exportExcel() Promise~Blob~
+    }
+
+    %% 关系标记
+    User "1" --> "*" Contract : 创建/拥有
+    Contract "1" --> "*" Invoice : 包含
+    Invoice "1" --> "*" Payment : 关联
+    AuthRoutes ..> AuthMiddleware : 使用
+    AuthRoutes ..> Database : 查询
+    ContractRoutes ..> AuthMiddleware : 保护
+    ContractRoutes ..> Database : CRUD
+    InvoiceRoutes ..> AuthMiddleware : 保护
+    InvoiceRoutes ..> Database : CRUD
+    PaymentRoutes ..> AuthMiddleware : 保护
+    PaymentRoutes ..> Database : CRUD
+    ContractRoutes ..> AuthRoutes : 依赖销售员过滤
+    ContractRoutes ..> ErrorHandler : 错误转发
+    AuthContext ..> AuthApi : 调用
+    ContractApi ..> ApiClient : 继承
+    InvoiceApi ..> ApiClient : 继承
+    PaymentApi ..> ApiClient : 继承

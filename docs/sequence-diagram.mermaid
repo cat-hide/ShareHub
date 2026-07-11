@@ -1,0 +1,25 @@
+sequenceDiagram
+    participant U as 用户浏览器
+    participant LP as LoginPage
+    participant AC as AuthContext
+    participant AA as auth API
+    participant C as axios client
+    participant S as Express 后端
+    participant DB as SQLite
+
+    U->>LP: 输入用户名密码，点击登录
+    LP->>AC: login(username, password)
+    AC->>AA: post('/api/auth/login', { username, password })
+    AA->>C: axios.post('/api/auth/login', data)
+    C->>S: POST /api/auth/login
+    S->>DB: SELECT * FROM users WHERE username = ?
+    DB-->>S: user row (含 bcrypt hash)
+    S->>S: bcrypt.compare(password, hash)
+    S->>S: jwt.sign({ id, role }, secret, { expiresIn: '7d' })
+    S-->>C: { code: 0, data: { token, user } }
+    C-->>AA: parsed response
+    AA-->>AC: { token, user }
+    AC->>AC: localStorage.setItem('token', token)
+    AC->>AC: setUser(user)
+    AC-->>LP: login success
+    LP->>LP: navigate('/contracts')

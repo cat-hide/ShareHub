@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+.env
+*.db
+*.sqlite
+.DS_Store
+*.log
+# Startup scripts (keep in repo for convenience)
+# start.bat
+# start-dev.bat

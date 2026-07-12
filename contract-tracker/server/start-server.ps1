@@ -9,33 +9,22 @@ if (!(Test-Path "logs")) { New-Item -ItemType Directory -Path "logs" -Force | Ou
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 "$timestamp === 系统启动 ===" | Out-File -Append -FilePath $logFile -Encoding utf8
 
-# ---- 查找 Node.js ----
-$nodePath = $null
-$searchPaths = @(
-    (Get-Command node -ErrorAction SilentlyContinue).Source,
-    "$env:ProgramFiles\nodejs\node.exe",
-    "${env:ProgramFiles(x86)}\nodejs\node.exe",
-    "$env:LOCALAPPDATA\fnm\aliases\default\node.exe"
-)
+# ---- Node.js（绝对路径，避免环境变量未加载）----
+$nodePath = "C:\Users\Acer\.workbuddy\binaries\node\versions\22.22.2\node.exe"
 
-# 也搜索 nvm 目录
-try {
-    $nvmDirs = Get-ChildItem "$env:APPDATA\nvm" -Directory -ErrorAction SilentlyContinue
-    foreach ($dir in $nvmDirs) {
-        $nvmNode = Join-Path $dir.FullName "node.exe"
-        if (Test-Path $nvmNode) { $searchPaths += $nvmNode }
-    }
-} catch {}
-
-foreach ($p in $searchPaths) {
-    if ($p -and (Test-Path $p)) {
-        $nodePath = $p
-        break
+if (-not (Test-Path $nodePath)) {
+    # 回退尝试
+    $fallback = @(
+        "$env:ProgramFiles\nodejs\node.exe",
+        "${env:ProgramFiles(x86)}\nodejs\node.exe"
+    )
+    foreach ($p in $fallback) {
+        if (Test-Path $p) { $nodePath = $p; break }
     }
 }
 
-if (-not $nodePath) {
-    "$timestamp 错误: 找不到 Node.js 安装" | Out-File -Append -FilePath $logFile -Encoding utf8
+if (-not (Test-Path $nodePath)) {
+    "$timestamp 错误: Node.js 路径不存在: $nodePath" | Out-File -Append -FilePath $logFile -Encoding utf8
     exit 1
 }
 

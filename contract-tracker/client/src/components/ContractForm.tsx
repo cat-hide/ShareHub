@@ -357,14 +357,14 @@ export default function ContractForm({ initialData, onSubmit, loading, contractI
                     <IconButton
                       size="small"
                       title="预览"
-                      onClick={() => window.open(getAttachmentPreviewUrl(att.id), '_blank')}
+                      onClick={() => window.open(getAttachmentPreviewUrl(att.id, att.access_token), '_blank')}
                     >
                       <PreviewIcon fontSize="small" />
                     </IconButton>
                     <IconButton
                       size="small"
                       title="下载"
-                      onClick={() => window.open(getAttachmentDownloadUrl(att.id), '_blank')}
+                      onClick={() => window.open(getAttachmentDownloadUrl(att.id, att.access_token), '_blank')}
                     >
                       <DownloadIcon fontSize="small" />
                     </IconButton>

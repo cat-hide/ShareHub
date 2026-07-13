@@ -8,6 +8,7 @@ import ContractFormPage from './pages/ContractFormPage';
 import ContractDetailPage from './pages/ContractDetailPage';
 import UserManagePage from './pages/UserManagePage';
 import PaymentTrackingPage from './pages/PaymentTrackingPage';
+import DashboardPage from './pages/DashboardPage';
 
 export default function App() {
   return (
@@ -21,7 +22,8 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/contracts" replace />} />
+        <Route index element={<DashboardPage />} />
+        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="contracts" element={<ContractListPage />} />
         <Route path="contracts/new" element={<ContractFormPage />} />
         <Route path="contracts/:id" element={<ContractDetailPage />} />

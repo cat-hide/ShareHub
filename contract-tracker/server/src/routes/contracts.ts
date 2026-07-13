@@ -46,9 +46,6 @@ function isProvided(val: unknown): boolean {
  * 获取数据权限过滤条件（sales 只看自己，admin 看全部）
  */
 function getAccessFilter(userRole: string, userId: number): { filterSql: string; params: unknown[] } {
-  if (userRole === 'sales') {
-    return { filterSql: 'AND c.salesperson_id = ?', params: [userId] };
-  }
   return { filterSql: '', params: [] };
 }
 
@@ -69,6 +66,7 @@ router.get('/', (req: Request, res: Response) => {
   const sortOrder = (req.query.sortOrder as string) === 'asc' ? 'ASC' : 'DESC';
 
   const { filterSql, params: accessParams } = getAccessFilter(user.role, user.id);
+  console.log(`[contracts.list] user=${user.username} role=${user.role} id=${user.id} filter="${filterSql}"`);
 
   const conditions: string[] = [];
   const queryParams: unknown[] = [];

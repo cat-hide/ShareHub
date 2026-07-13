@@ -52,6 +52,17 @@ export default function Layout() {
       <List>
         <ListItem disablePadding>
           <ListItemButton
+            selected={isActive('/') || isActive('/dashboard')}
+            onClick={() => navigate('/dashboard')}
+          >
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText primary="首页" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton
             selected={isActive('/contracts')}
             onClick={() => navigate('/contracts')}
           >

@@ -16,6 +16,7 @@ import {
   Divider,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -52,11 +53,11 @@ export default function Layout() {
       <List>
         <ListItem disablePadding>
           <ListItemButton
-            selected={isActive('/') || isActive('/dashboard')}
-            onClick={() => navigate('/dashboard')}
+            selected={location.pathname === '/'}
+            onClick={() => navigate('/')}
           >
             <ListItemIcon>
-              <DashboardIcon />
+              <HomeOutlinedIcon />
             </ListItemIcon>
             <ListItemText primary="首页" />
           </ListItemButton>

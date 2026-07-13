@@ -10,6 +10,7 @@ import contractsRouter from './routes/contracts';
 import invoicesRouter from './routes/invoices';
 import paymentsRouter from './routes/payments';
 import shipmentsRouter from './routes/shipments';
+import dashboardRouter from './routes/dashboard';
 import { UPLOAD_DIR, CORS_ORIGIN } from './config';
 import { isSafeStorageName, getPreviewContentType } from './utils/fileUtils';
 
@@ -275,6 +276,7 @@ export function createApp(): express.Application {
   app.get('/api/shipments/attachments/:id/download', (req, res) => serveAttachment('shipment_attachments', req, res, 'download'));
 
   // Protected routes
+  app.use('/api/dashboard', authenticate, dashboardRouter);
   app.use('/api/contracts', authenticate, contractsRouter);
   app.use('/api', authenticate, invoicesRouter);
   app.use('/api', authenticate, paymentsRouter);

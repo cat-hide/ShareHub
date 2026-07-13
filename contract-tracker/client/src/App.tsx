@@ -23,7 +23,6 @@ export default function App() {
         }
       >
         <Route index element={<DashboardPage />} />
-        <Route path="dashboard" element={<DashboardPage />} />
         <Route path="contracts" element={<ContractListPage />} />
         <Route path="contracts/new" element={<ContractFormPage />} />
         <Route path="contracts/:id" element={<ContractDetailPage />} />

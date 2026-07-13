@@ -66,7 +66,6 @@ router.get('/', (req: Request, res: Response) => {
   const sortOrder = (req.query.sortOrder as string) === 'asc' ? 'ASC' : 'DESC';
 
   const { filterSql, params: accessParams } = getAccessFilter(user.role, user.id);
-  console.log(`[contracts.list] user=${user.username} role=${user.role} id=${user.id} filter="${filterSql}"`);
 
   const conditions: string[] = [];
   const queryParams: unknown[] = [];

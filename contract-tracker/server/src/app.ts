@@ -282,8 +282,16 @@ export function createApp(): express.Application {
   app.use('/api', authenticate, paymentsRouter);
   app.use('/api', authenticate, shipmentsRouter);
 
-  // Serve static files in production
+  // Serve static files (优先 .gz)
   const clientDistPath = path.join(__dirname, '..', '..', 'client', 'dist');
+  app.use((req, res, next) => {
+    if (!(req.headers['accept-encoding'] || '').includes('gzip')) return next();
+    const gz = path.join(clientDistPath, req.path + '.gz');
+    if (!fs.existsSync(gz)) return next();
+    if (req.path.endsWith('.js')) { res.set('Content-Encoding','gzip'); res.set('Content-Type','application/javascript'); res.set('Cache-Control','no-cache'); res.sendFile(gz); return; }
+    if (req.path.endsWith('.css')) { res.set('Content-Encoding','gzip'); res.set('Content-Type','text/css'); res.set('Cache-Control','no-cache'); res.sendFile(gz); return; }
+    next();
+  });
   app.use(express.static(clientDistPath, {
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('.html') || filePath.endsWith('.js') || filePath.endsWith('.css')) {

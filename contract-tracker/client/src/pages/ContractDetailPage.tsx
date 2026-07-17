@@ -319,7 +319,7 @@ export default function ContractDetailPage() {
       <MaterialSection materials={materials} contractId={contractId} onRefresh={refreshMaterials} />
 
       {/* 发货记录 */}
-      <ShippingSection shipments={shipments} contractId={contractId} onRefresh={refreshShipments} />
+      <ShippingSection shipments={shipments} contractId={contractId} onRefresh={refreshShipments} materials={materials} />
 
       {/* 开票记录 */}
       <InvoiceSection

@@ -12,7 +12,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
 import type { Shipment, ShipmentAttachment, ContractMaterial } from '../types';
 import * as shipmentsApi from '../api/shipments';
-import * as contractsApi from '../api/contracts';
 import ConfirmDialog from './ConfirmDialog';
 
 function formatDate(d: string) {
@@ -26,9 +25,10 @@ interface Props {
   contractId: number;
   onRefresh: () => void;
   loading?: boolean;
+  materials: ContractMaterial[];
 }
 
-export default function ShippingSection({ shipments, contractId, onRefresh, loading }: Props) {
+export default function ShippingSection({ shipments, contractId, onRefresh, loading, materials }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Shipment | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Shipment | null>(null);
@@ -44,17 +44,6 @@ export default function ShippingSection({ shipments, contractId, onRefresh, load
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [deleteAttachTarget, setDeleteAttachTarget] = useState<ShipmentAttachment | null>(null);
   const [attachmentsMap, setAttachmentsMap] = useState<Record<number, ShipmentAttachment[]>>({});
-  const [materials, setMaterials] = useState<ContractMaterial[]>([]);
-
-  /** Load contract materials for the dropdown */
-  const loadMaterials = useCallback(async () => {
-    try {
-      const res = await contractsApi.getMaterials(contractId);
-      if (res.code === 0) setMaterials(res.data);
-    } catch { /* ignore */ }
-  }, [contractId]);
-
-  useEffect(() => { loadMaterials(); }, [loadMaterials]);
 
   const fetchAttachments = useCallback(async (shipmentId: number) => {
     try {
